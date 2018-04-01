@@ -1,23 +1,16 @@
-
-    <ol class="breadcrumb" dir="ltr">
-      <li><a href="{{args['base']}}"><i class="fas fa-home"></i></a></li>
-      %for dir_d in fils[0].split('/')[:-1]:
-      <li>{{dir_d}}</li>
+      %try:
+      <a class="col-md-2 breadcrumb pull-right text-muted" href="{{'/logout'}}" title="Logout" target="_blank">Logout • {{args['aaa'].current_user.username}}</a>
+      %except:
+      <a class="col-md-2 breadcrumb pull-right text-muted" href="{{'/login'}}" title="Login" target="_blank">Login</a>
       %end
-    </ol>
-    <!--
-    <div class="row">
-      <div class="col-lg-9"></div>
-      <div class="col-lg-3">
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-search form-control-feedback"></i></span>
-          </div>
-          <input class="form-control" aria-label="search" type="text">
-        </div>
-      </div>
-    </div>
-    -->
+      <ol class="col-md-10 breadcrumb">
+        <li><a href="{{args['base']}}"><i class="fas fa-home"></i></a></li>
+        %for dir_d in fils[0].split('/')[:-1]:
+        <li>{{dir_d}}</li>
+        %end
+      </ol>
+
+
     <div class="row">
       <div class="table-responsive">
         <table id="bs-table" class="table table-hover">

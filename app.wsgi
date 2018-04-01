@@ -4,17 +4,40 @@
 # License:      MIT
 # pylint:       disable=C0103
 
+import logging
 import os
-from glob import glob
 import time
+from glob import glob
+
 import bottle
-import humanfriendly
 import dateparser
+import humanfriendly
 import traceback
+from beaker.middleware import SessionMiddleware
+from cork import Cork
+
+from keys import file_auth
 
 # environ ---------------------------------------------------------------------
+
+logging.basicConfig(format='localhost - - [%(asctime)s] %(message)s',
+                    level=logging.DEBUG)
+log = logging.getLogger(__name__)
+bottle.debug(True)
+
+session_opts = {
+   'session.cookie_expires': True,
+   'session.encrypt_key': 'kjnfsdJKSFDJKLF023432J32JK32NJK3KFSDFBDKJFDSF',
+   'session.httponly': True,
+   'session.timeout': 3600 * 24,  # 1 day
+   'session.type': 'cookie',
+   'session.validate_key': True,
+}
+
 app = bottle.app()
-args = {'base': '/sakuin/', 'fdir': './_public', 'os': os}
+aaa = Cork('auth')
+app = application = SessionMiddleware(app, session_opts)
+args = {'base': '/sakuin/', 'fdir': './_public', 'aaa': aaa}
 
 # general functionality -------------------------------------------------------
 
@@ -41,6 +64,18 @@ def serve(page, **kwargs):
 
 # app specific ----------------------------------------------------------------
 
+def check_auth(fn):
+    if fn in file_auth:
+        try:
+            if aaa.current_user.username not in file_auth[fn]:
+                return False
+            else:
+                return True
+        except:
+            return False
+    else:
+        return True
+
 def sizeof_fmt(num, suffix=''):
     """Get size of file."""
     for unit in ['b','K','M','G','T','P','E','Z']:
@@ -55,6 +90,12 @@ def collect(fdir):
     fils, dirs, finf = [], [], {}
     for f in globbar:
         fn = f.replace(args['fdir'] + '/', '')
+
+        if check_auth(fn):
+            pass
+        else:
+            continue
+
         if '.' in f.split('/')[-1]:
             fils.append(fn)
         else:
@@ -81,14 +122,41 @@ def collect(fdir):
 
 # app routes ------------------------------------------------------------------
 
+@bottle.route('/bananen')
+def bananas():
+    return '<img src="https://admin.mashable.com/wp-content/uploads/2012/10/dancing_banana.gif"/>'
+
+
+@bottle.post('/auth')
+def auth():
+  """Authenticate users"""
+  username = post_get('username')
+  password = post_get('password')
+  print(username, password)
+  aaa.login(username, password, success_redirect='./', fail_redirect='./bananen')
+
+
+@bottle.route('/login')
+def login():
+    return serve('login')
+
+@bottle.route('/logout')
+def logout():
+    aaa.logout(success_redirect='./')
+
+
 @bottle.route('/_public/<filename:path>')
 def file_serve(filename):
+    if not check_auth(filename):
+        return bananas()
     return bottle.static_file(filename, root='_public')
 
 
 @bottle.route('/<handle>')
 def dir_serve(handle):
     """Server dir page."""
+    if not check_auth(handle):
+        return bananas()
     try:
         if '.' in handle:
             return file_serve(handle)
@@ -103,6 +171,7 @@ def dir_serve(handle):
 @bottle.route('/')
 def root():
     """Mains page."""
+    print(aaa._beaker_session)
     try:
         dirs, fils, finf, fsum = collect(args['fdir'] + '/*')
         return serve('index', dirs=dirs, fils=fils, finf=finf, fsum=fsum)

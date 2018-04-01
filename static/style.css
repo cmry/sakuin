@@ -4,6 +4,8 @@
 
 .pull-right {
   float: right !important;
+  margin-bottom: 0px !important;
+  margin: 0px; padding: 0px; float: right; 
 }
 
 .breadcrumb {
@@ -15,7 +17,7 @@
 }
 
 .breadcrumb>li {
-  display: inline-block
+  display: inline-block;
 }
 
 .breadcrumb>li+li:before {
