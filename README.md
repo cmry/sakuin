@@ -1,6 +1,6 @@
 # sakuin
 
-![sakuin](https://onyx.uvt.nl/toku/static/sakuin.png)
+![sakuin](https://onyx.uvt.nl/toku/static/sakuin2.png)
 
 >This app only works for :penguin: using :snake: 2 or 3.
 
