@@ -4,6 +4,7 @@
 # License:      MIT
 # pylint:       disable=C0103
 
+import json
 import logging
 import os
 import time
@@ -100,13 +101,22 @@ def collect(fdir):
             fils.append(fn)
         else:
             dirs.append(fn)
+
+        meta_name = args['fdir'] + '/' + '.' + fn.split('.')[0] + '.yml'
+        meta = None
+        if os.path.exists(meta_name):
+            with open(meta_name) as fi:
+                meta = dict([tuple(k.split(': ')) for k in
+                        fi.read().split('\n') if k])
+
         file_info = os.stat(f)
         finf[fn] = {'size': sizeof_fmt(file_info.st_size),
                     'bsize': file_info.st_size,
                     'ctime': time.ctime(file_info.st_ctime),
                     'date': dateparser.parse(time.ctime(file_info.st_ctime)
                         ).strftime("%d %b %H:%M"),
-                    'full': f}
+                    'full': f,
+                    'meta': meta}
 
     fsum = {}
     for k, v in finf.items():

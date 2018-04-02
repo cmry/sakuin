@@ -17,14 +17,15 @@
           <thead>
             <tr>
               <th class="text-right" data-sort="int">#</th>
-              <th class="col-sm-8 text-left" data-sort="string">Name</th>
-              <th class="col-sm-2 text-right" data-sort="int">Size</th>
+              <th class="col-sm-3 text-left" data-sort="string">Name</th>
+              <th class="col-sm-6 text-left" data-sort="string">Meta</th>
+              <th class="col-sm-1 text-right" data-sort="int">Size</th>
               <th class="col-sm-2 text-right" data-sort="int">Modified</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-              <td colspan="4">
+              <td colspan="5">
                 <small class="pull-left text-muted" dir="ltr">{{fsum['dcount']}} directories and {{fsum['fcount']}} files, {{fsum['size']}} in total</small>
                 <a class="pull-right small text-muted" href="https://github.com/cmry/sakuin" title="Bootstrap Listr on GitHub" target="_blank">Source on GitHub</a>
               </td>
@@ -38,6 +39,7 @@
                 <i class="fa fa-folder"></i>&nbsp;
                 <a href="{{args['base'] + entry}}"><strong>{{entry}}</strong></a>
               </td>
+              <td></td>
               <td class="text-right" data-sort-value="{{finf[entry]['bsize']}}">{{finf[entry]['size']}}</td>
               <td class="text-right" data-sort-value="{{finf[entry]['ctime']}}" title="{{finf[entry]['date']}}">{{finf[entry]['date']}}</td>
             </tr>
@@ -57,6 +59,23 @@
                 %end
                 <a href="{{args['base'] + '_public/' + entry}}"><strong>{{entry.split('/')[-1]}}</strong></a>
               </td>
+              %if finf[entry]['meta']:
+                <td>
+                %for k, v in finf[entry]['meta'].items():
+                  %if k == 'name':
+                  <div class="col-sm-12 pull-right">{{v}} <br>&nbsp;</div>
+                  %elif k == 'source_name':
+                  <div class="col-sm-6 pull-right"><b>source</b>: <a href="{{finf[entry]['meta']['source_url']}}">{{v}}</a></div>
+                  %elif k == 'source_url':
+                  %pass
+                  %else:
+                  <div class="col-sm-6 pull-right"><b>{{k}}</b>: {{v}}</div>
+                  %end
+                %end
+                </td>
+              %else:
+              <td></td>
+              %end
               <td class="text-right" data-sort-value="{{finf[entry]['bsize']}}">{{finf[entry]['size']}}</td>
               <td class="text-right" data-sort-value="{{finf[entry]['ctime']}}" title="{{finf[entry]['date']}}">{{finf[entry]['date']}}</td>
             </tr>
