@@ -6,7 +6,7 @@
 
 ## Dependencies
 
-Pip install requirements are `bottle`, `humanfriendly`, and `dateparser`.
+Pip install requirements are `bottle`, `bottle-cork`, `beaker`, `humanfriendly`, and `dateparser`.
 
 ## Install
 
@@ -16,3 +16,7 @@ Under `app.wsgi`, change `base` to fit the URL structure (i.e. if you want
 it under the main URL it should be changed to `/`. If you want to change the
 filedir that `sakuin` monitors, change `fdir` to point *from sakuin* to that
 directory.
+
+## Adding New User
+
+To add new users, edit the name and password in `new_user.py` and run the script.
